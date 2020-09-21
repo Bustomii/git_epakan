@@ -263,8 +263,7 @@ class PenggunaController extends Controller
                 'foto_ktp'          => $path1,
                 'foto_peternakan'   => $path2,
                 'foto_cppb'         => $path3,
-                'foto_sertifikat'   => $path4,
-                'status'            => 'Belum Aktif'                
+                'foto_sertifikat'   => $path4               
             ]);
             
             if ($daftarmitra != NULL){
@@ -592,10 +591,12 @@ class PenggunaController extends Controller
         if (auth::guard('pengguna')->check()){
             $id = Auth::guard('pengguna')->user()->id;
             $pengguna = Pengguna::find($id);
-            $cek_pengguna = DB::select("select * from request_mitra WHERE id_pengguna = '".$id."'");
+            $cek_pengguna = DB::select("select a.*, b.status as cek from request_mitra a, pengguna b
+            WHERE a.id_pengguna = b.id
+            AND a.id_pengguna = '".$id."'");
             
             foreach($cek_pengguna as $cek){
-				$cek_data = $cek->status;
+				$cek_data = $cek->cek;
             }
             
             $id_saldo = DB::select("
@@ -620,14 +621,14 @@ class PenggunaController extends Controller
                     </script>";
             }
             else{
-            if($cek_data == 'Aktif'){     
+            if($cek_data == 1){     
                 return view('adminjual/belum-bayar')->with([
                     'total'=>$total,
                     'pengguna'=>$pengguna,
                     'id_saldo'=>$id_saldo
                 ]);
             }
-            else if($cek_data == 'Belum Aktif'){
+            else if($cek_data == 0){
                 return redirect()->route('info')->withMessage('Permintaan Mitra Sedang Diproses');
             }
         }
