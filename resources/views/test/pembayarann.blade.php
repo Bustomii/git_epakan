@@ -598,6 +598,9 @@
                                 <input id="jumlah{{$ulang+1}}" style="width:100%;max-width:60px" type="number" value="{{$object->jumlah}}" disabled="">
                                 <button onclick="fungsiTambah{{$ulang+1}}()" id="btnTambah{{$ulang+1}}" type="button" class="btn btn-success"><i class="fas fa-plus"></i></button>
 									</div>
+									<div class="">
+										<p class="price" id="harga"><span>Rp.</span><span>{{$jumlahharga}}</span></p>
+									</div>
                                 </div>
 								<div class="col-md-12">
 								<div class="form-group">

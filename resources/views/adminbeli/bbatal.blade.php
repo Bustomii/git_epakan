@@ -510,14 +510,12 @@
 										</figure>
 									</div>
 									<div class="col-sm">
-
-					<h4>Total Pembayaran  : Rp{{$data->total_keuntungan}}</h4>
-					<p>Alamat : {{$data->alamat_antar}}
-
-                    
+										<p>Jumlah Pesanan  : {{$data->jumlah}}</P> 
+										<h4>Total Pembayaran  : Rp{{$data->total_bayar}}</h4>
+										<p>Alamat : {{$data->alamat_antar}}
+										<p>Ongkos kirim : {{$data->ongkir}}
 									</div>
-								</div>
-
+									</div>
 							
 							</div>
 							<p>Kode Pemesanan : : 	{{$data ->id_pesanan}}</p>

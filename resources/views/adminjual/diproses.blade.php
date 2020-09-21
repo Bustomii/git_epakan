@@ -421,7 +421,11 @@
 		</div>
 	</div>
 	<!-- /MAIN MENU -->
-
+	@if (session('message'))
+    <div class="alert alert-success text-center">
+      <font color="black" size="3px">{{session('message')}}</font>
+    </div>
+    @endif
 	<!-- SECTION HEADLINE -->
 	<div class="section-headline-wrap">
 		<div class="section-headline">
@@ -478,58 +482,40 @@
 						<a class="flex-sm-fill text-sm-center nav-link" href="{{route('diterima')}}">Diterima</a>
 
 					</nav>
-
+					@foreach($diproses as $data)
 					<div class="cart belumbayar">
-						<div class="p-3">
-							<p class="float-right">30 Maret 2019</p>
-							<p>Atur Pengiriman</p>
+					@csrf
+                		<!-- CART -->
+				
+						<div class="p-3"> 
+							<p class="float-right">{{$data->created_at}}</p>
+							<p>Status Pesanan : {{$data->status}}  </p>
 							<hr/>
 							<div class="container">
 								<div class="row">
 									<div class="col-sm">
 										<figure class="product-preview-image">
-											<img src="images/items/pakan.jpg" alt="product-image">
+										<img src="{{ asset('uploads/file/'.$data->foto2) }}" style="height:110%" alt="product-image">
 										</figure>
 									</div>
 									<div class="col-sm">
-										<p>Total Harga Pakan  :</P>
-										<p>Total Ongkos Kirim :</p>
-										<h4>Total Pembayaran  :</h4>
+										<p>Jumlah Pesanan  : {{$data->jumlah}}</P> 
+										<h4>Total Pembayaran  : Rp{{$data->total_bayar}}</h4>
+										<p>Alamat : {{$data->alamat_antar}}
+										<p>Ongkos kirim : {{$data->ongkir}}
 									</div>
-								</div>
-								<button type="button" class="btn btn-success float-right">Atur Pengiriman</button>
+									</div>
+								<form class="search-form" method="get" action="{{route('kirim-barang',$data->id_pesanan)}}">
+										<button type="submit" name="konfirmasi" value="1" class="btn btn-success float-right">Kirim Barang</button>
+									</form>
 							</div>
-							<p>Kode Pemesanan #1234</p>
+							<p>Kode Pemesanan : : 	{{$data->id_pesanan}}</p>
+							
 						</div>
+						
 					</div>
-
+					@endforeach
 					<br/>
-					<div class="cart belumbayar">
-						<div class="p-3">
-							<p class="float-right">30 Maret 2019</p>
-							<p>Atur Pengiriman</p>
-							<hr/>
-							<div class="container">
-								<div class="row">
-									<div class="col-sm">
-										<figure class="product-preview-image">
-											<img src="images/items/pakan.jpg" alt="product-image">
-										</figure>
-									</div>
-									<div class="col-sm">
-										<p>Total Harga Pakan  :</P>
-										<p>Total Ongkos Kirim :</p>
-										<h4>Total Pembayaran  :</h4>
-									</div>
-								</div>
-								<button type="button" class="btn btn-success float-right">Atur Pengiriman</button>
-							</div>
-							<p>Kode Pemesanan #1234</p>
-						</div>
-					</div>
-
-
-
 				</div>
 			<!-- CONTENT -->
 		</div>

@@ -712,14 +712,14 @@ class ProdukController extends Controller
               }
 
               //MI Developer
-              $belum_bayar = DB::select("select b.alamat_antar, a.id_pesanan, a.total_bayar, b.status, c.foto2, a.created_at 
+              $belum_bayar = DB::select("select b.alamat_antar, b.ongkir, b.jumlah, b.harga, a.id_pesanan, a.total_bayar, b.status, c.foto2, a.created_at 
               FROM pesanan a, detail_pesanan b, produk c
               WHERE a.id_pengguna = b.id_pembeli
               AND a.id_pengguna = '".$id."'
               AND b.id_produk = c.id
               AND b.id_pesanan = a.id_pesanan
               AND b.status ='Belum Bayar'
-              ORDER BY id_detail DESC");
+              ORDER BY b.id_detail DESC");
 
 
                 $produk = Produk::find($id_produk);
@@ -803,13 +803,14 @@ class ProdukController extends Controller
            ];
           }
 
-          $bdiproses = DB::select("select b.total_keuntungan, b.alamat_antar, a.id_pesanan, a.total_bayar, b.status, c.foto2, a.created_at 
-              FROM pesanan a, detail_pesanan b, produk c
+          $bdiproses = DB::select("select b.alamat_antar, b.ongkir, b.jumlah, b.harga, a.id_pesanan, a.total_bayar, b.status, c.foto2, a.created_at 
+          FROM pesanan a, detail_pesanan b, produk c
               WHERE a.id_pengguna = b.id_pembeli
               AND a.id_pengguna = '".$id."'
               AND b.id_produk = c.id
               AND b.id_pesanan = a.id_pesanan
-              AND b.status ='Diproses'");
+              AND b.status ='Diproses'
+              ORDER BY b.id_detail DESC");
         
           return view('adminbeli/bdiproses')->withPesanan($pesanan)->withPengguna($pengguna)->with([
             'bdiproses' => $bdiproses
@@ -880,7 +881,18 @@ class ProdukController extends Controller
            ];
           }
 
-                return view('adminbeli/bdikirim')->withPesanan($pesanan)->withPengguna($pengguna);
+          $dikirim = DB::select("select b.alamat_antar, b.ongkir, b.jumlah, b.harga, a.id_pesanan, a.total_bayar, b.status, c.foto2, a.created_at 
+          FROM pesanan a, detail_pesanan b, produk c
+              WHERE a.id_pengguna = b.id_pembeli
+              AND a.id_pengguna = '".$id."'
+              AND b.id_produk = c.id
+              AND b.id_pesanan = a.id_pesanan
+              AND b.status ='dikirim'
+              ORDER BY b.id_detail DESC");
+
+                return view('adminbeli/bdikirim')->withPesanan($pesanan)->withPengguna($pengguna)->with([
+                    'dikirim' => $dikirim
+                ]);
             }else{
                 $produk=Produk::get();
                 return view('welcome')->with([
@@ -950,7 +962,18 @@ class ProdukController extends Controller
                ];
               }
 
-                return view('adminbeli/bditerima')->withPengguna($pengguna)->withPesanan($pesanan);
+              $diterima = DB::select("select b.alamat_antar, b.ongkir, b.jumlah, b.harga, a.id_pesanan, a.total_bayar, b.status, c.foto2, a.created_at 
+              FROM pesanan a, detail_pesanan b, produk c
+              WHERE a.id_pengguna = b.id_pembeli
+              AND a.id_pengguna = '".$id."'
+              AND b.id_produk = c.id
+              AND b.id_pesanan = a.id_pesanan
+              AND b.status ='diterima'
+              ORDER BY b.id_detail DESC");
+
+                return view('adminbeli/bditerima')->withPengguna($pengguna)->withPesanan($pesanan)->with([
+                    'diterima' => $diterima
+                ]);
             }else{
                 $produk=Produk::get();
                 return view('welcome')->with([

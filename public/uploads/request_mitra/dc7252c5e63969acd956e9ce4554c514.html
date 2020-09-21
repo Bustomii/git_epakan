@@ -1,0 +1,136 @@
+<!-- Content Wrapper. Contains page content -->
+<?php
+$nama = $this->session->userdata('nama');
+$hakAkses = $this->session->userdata('hak_akses');
+
+
+
+?>
+
+<div class="content-wrapper">
+    <script>
+        var map;
+        var dinasLH = {lat: -5.112849, lng: 105.310637};
+        var metro = {lat :-5.113153 , lng: 105.307431 };
+        var infoWindow,infoWindow2;
+        var contentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<h1 id="firstHeading" class="firstHeading">Diskominfo Kota Metro</h1>'+
+            '<div id="bodyContent">'+
+            '<p>Dinas Komunikasi dan Informasi, <b>Kota Metro</b>' +
+            ''+
+            '</p>'+
+            '</div>'+
+            '</div>';
+        var lokasiPengajuan = [
+            <?php
+            $no = 1;
+                foreach ($pengajuanharian as $item ){
+                    $idpengajuanharian = $item->id_pengajuanharian;
+                    $lat = $item->latitude;
+                    $lon = $item->longitude;
+                    $idUser = $item->id_pelanggan;
+                    $namapelanggan = $item->nama_pelanggan;
+                    $alamat = $item->alamat;
+                    ?>
+                ['<?php echo $idpengajuanharian?>','<?php echo $idUser?>',<?php echo $lat?>,
+                    <?php echo $lon?>,'<?php echo $namapelanggan  ?>','<?php echo $alamat  ?>'],
+                <?php
+                }
+            ?>
+        ];
+
+        function setMarkers(map,locations) {
+
+            for (var i = 0;i<locations.length;i++){
+                var pengajuanharian = locations[i];
+                var myLatLng = new google.maps.LatLng(pengajuanharian[2],pengajuanharian[3]);
+                //alert(myLatLng);
+                var contentString =
+                    '<div id="content">' +
+                    '<div id="siteNotice">' +
+                    '</div>' +
+                    '<h6 id="firstHeading" class="firstHeading">Pelanggan : ' + pengajuanharian[4] + '</h6>' +
+                    '<div id="bodyContent"><br> Alamat : ' + pengajuanharian[5] +
+                    '<br>'+
+                    '<br>'+
+                    '<a href=<?php echo base_url() ?>Utama/detailPengajuan/' + pengajuanharian[0] + ' class="btn btn-success btn-primary fa fa-mouse-pointer"> Info Detail</a>' +
+                    '</div>' +
+                    '</div>';
+                var infoWindow = new google.maps.InfoWindow({content: contentString});
+
+                var marker = new google.maps.Marker({
+                    position: myLatLng,
+                    map: map,
+                    title: pengajuanharian[4],
+                    icon : '<?php echo base_url();?>assets1/foto/icon2.png'
+                });
+
+                google.maps.event.addListener(marker, 'click', getInfoCallback(map, contentString));
+            }
+
+            function getInfoCallback(map, content) {
+                var infowindow = new google.maps.InfoWindow({content: content});
+                return function () {
+                    infowindow.setContent(content);
+                    infowindow.open(map, this);
+                };
+            }
+        }
+
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: metro,
+                zoom: 15
+            });
+            var bounds = new google.maps.LatLngBounds();
+            infoWindow = new google.maps.InfoWindow;
+            infoWindow2 = new google.maps.InfoWindow({
+                content : contentString
+            })
+
+            var marker = new google.maps.Marker({
+                position: dinasLH,
+                animation: google.maps.Animation.DROP,
+                title : 'Dinas Lingkungan Hidup Kota Metro'});
+
+            function toggleBounce() {
+                if (marker.getAnimation() !== null) {
+                    marker.setAnimation(null);
+                } else {
+                    marker.setAnimation(google.maps.Animation.BOUNCE);
+                }
+            }
+
+           // marker.setMap(map);
+            /*marker.addListener('click',function () {
+                infoWindow2.open(map,marker);
+            })*/
+
+            //alert(lokasiPengajuan[0]);
+            setMarkers(map,lokasiPengajuan);
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC59rLwFIHTPr_P2A32cegCjg56EQSbSO8&callback=initMap"
+            async defer></script>
+
+    <div class="content">
+        <div class="row">
+        <br>
+        <div class="panel panel-primary">
+            <div class="panel-heading">Persebaran Pengajuan Harian</div>
+            <div class="panel-body">
+                <div style="height: 850px; width: 100%;" id="map"></div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</div>
+
+
+<!-- /.content-wrapper -->
+

@@ -66,7 +66,7 @@ class PenggunaController extends Controller
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-    //create by MIDevoloper
+    //create by MIDeveloper
     public function cairkanSaldo(Request $request){
         if (auth::guard('pengguna')->check()){
             $id = Auth::guard('pengguna')->user()->id;
@@ -166,7 +166,7 @@ class PenggunaController extends Controller
     }
 
     //controler profl
-    //create by MIDevoloper
+    //create by MIDeveloper
     public function ambilProfil(){
         if (auth::guard('pengguna')->check()){
             $id = Auth::guard('pengguna')->user()->id;
@@ -224,7 +224,7 @@ class PenggunaController extends Controller
 
     }
     
-    //create by MIDevoloper
+    //create by MIDeveloper
     public function daftarmitranew(Request $request){
         if (auth::guard('pengguna')->check()){
             $id = Auth::guard('pengguna')->user()->id;
@@ -413,7 +413,7 @@ class PenggunaController extends Controller
 
     }
 
-    //create by MIDevoloper
+    //create by MIDeveloper
     public function daftarKecamatan(){
         if (auth::guard('pengguna')->check()){
             $id = Auth::guard('pengguna')->user()->id;
@@ -453,7 +453,7 @@ class PenggunaController extends Controller
 
     }
 
-    //create by MIDevoloper
+    //create by MIDeveloper
     public function dafatarOngkir(){
         if (auth::guard('pengguna')->check()){
             $id = Auth::guard('pengguna')->user()->id;
@@ -521,7 +521,7 @@ class PenggunaController extends Controller
 
     }
     
-    //create by MIDevoloper
+    //create by MIDeveloper
     public function tambahOngkir(Request $request){
         if (auth::guard('pengguna')->check()){
             $id = Auth::guard('pengguna')->user()->id;
@@ -621,11 +621,21 @@ class PenggunaController extends Controller
                     </script>";
             }
             else{
+
+              $belum_bayar = DB::select("select b.alamat_antar, b.ongkir, b.jumlah, b.harga, a.id_pesanan, a.total_bayar, b.status, c.foto2, a.created_at 
+              FROM pesanan a, detail_pesanan b, produk c
+              WHERE b.id_penjual = '".$id."'
+              AND b.id_produk = c.id
+              AND b.id_pesanan = a.id_pesanan
+              AND b.status ='Belum Bayar'
+              ORDER BY id_detail DESC");
+
             if($cek_data == 1){     
                 return view('adminjual/belum-bayar')->with([
                     'total'=>$total,
                     'pengguna'=>$pengguna,
-                    'id_saldo'=>$id_saldo
+                    'id_saldo'=>$id_saldo,
+                    'belum_bayar'=>$belum_bayar
                 ]);
             }
             else if($cek_data == 0){
@@ -645,7 +655,18 @@ class PenggunaController extends Controller
         if (auth::guard('pengguna')->check()){
             $id = Auth::guard('pengguna')->user()->id;
             $pengguna = Pengguna::find($id);
-            return view('adminjual/diproses')->withPengguna($pengguna);
+
+            $diproses = DB::select("select b.alamat_antar, b.ongkir, b.jumlah, b.harga, a.id_pesanan, a.total_bayar, b.status, c.foto2, a.created_at 
+            FROM pesanan a, detail_pesanan b, produk c
+            WHERE b.id_penjual = '".$id."'
+            AND b.id_produk = c.id
+            AND b.id_pesanan = a.id_pesanan
+            AND b.status ='diproses'
+            ORDER BY id_detail DESC");
+
+            return view('adminjual/diproses')->withPengguna($pengguna)->with([
+                'diproses'=>$diproses
+            ]);
         }else{
             $produk=Produk::get();
             return view('welcome')->with([
@@ -659,7 +680,19 @@ class PenggunaController extends Controller
         if (auth::guard('pengguna')->check()){
             $id = Auth::guard('pengguna')->user()->id;
             $pengguna = Pengguna::find($id);
-            return view('adminjual/dikirim')->withPengguna($pengguna);
+
+            $dikirim = DB::select("select b.alamat_antar, b.ongkir, b.jumlah, b.harga, a.id_pesanan, a.total_bayar, b.status, c.foto2, a.created_at 
+            FROM pesanan a, detail_pesanan b, produk c
+            WHERE b.id_penjual = '".$id."'
+            AND b.id_produk = c.id
+            AND b.id_pesanan = a.id_pesanan
+            AND b.status ='dikirim'
+            ORDER BY id_detail DESC");
+
+            return view('adminjual/dikirim')->withPengguna($pengguna)->with([
+                'dikirim'=>$dikirim
+            ]);
+
         }else{
             $produk=Produk::get();
             return view('welcome')->with([
@@ -669,11 +702,65 @@ class PenggunaController extends Controller
 
     }
 
+    public function kirimBarang(Request $request){
+        if (auth::guard('pengguna')->check()){
+            $id = Auth::guard('pengguna')->user()->id;
+            $pengguna = Pengguna::find($id);
+            $get = $request->all();
+
+            if($request['konfirmasi']==1){
+            $updatestatusdikirim = DB::table('detail_pesanan')
+                ->where('id_pesanan', '=', $request['kode_pesanan'])
+                ->update([
+                    'status' => 'dikirim',
+                ]);
+
+                if(!is_null($updatestatusdikirim)){
+                    return redirect()->route('dikirim')->withMessage('Pesanan Berhasil Dikirim');
+                }else{
+                    return redirect()->route('diproses') ->withMassage('Pesanan Gagall Dikirim');
+                }
+            }
+            else{
+
+                $updatestatusditerima = DB::table('detail_pesanan')
+                ->where('id_pesanan', '=', $request['kode_pesanan'])
+                ->update([
+                    'status' => 'diterima',
+                ]);
+
+                if(!is_null($updatestatusditerima)){
+                    return redirect()->route('bditerima')->withMessage('Konfirmasi Pesanan Diterima Berhasil');
+                }else{
+                    return redirect()->route('bdikirim') ->withMassage('Gagal Konfirmasi Pesanan Diterima');
+                }
+
+            }
+        }else{
+            $produk=Produk::get();
+            return view('welcome')->with([
+               'produk' => $produk
+           ]); 
+        }
+    }
+
     public function ambilFotoditerima(){
         if (auth::guard('pengguna')->check()){
             $id = Auth::guard('pengguna')->user()->id;
             $pengguna = Pengguna::find($id);
-            return view('adminjual/diterima')->withPengguna($pengguna);
+            
+            $diterima = DB::select("select b.alamat_antar, b.ongkir, b.jumlah, b.harga, a.id_pesanan, a.total_bayar, b.status, c.foto2, a.created_at 
+            FROM pesanan a, detail_pesanan b, produk c
+            WHERE b.id_penjual = '".$id."'
+            AND b.id_produk = c.id
+            AND b.id_pesanan = a.id_pesanan
+            AND b.status ='diterima'
+            ORDER BY id_detail DESC");
+
+            return view('adminjual/diterima')->withPengguna($pengguna)->with([
+                'diterima'=>$diterima
+            ]);
+
         }else{
             $produk=Produk::get();
             return view('welcome')->with([

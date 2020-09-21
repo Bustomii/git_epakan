@@ -428,7 +428,11 @@
 		</div>
 	</div>
 	<!-- /MAIN MENU -->
-
+	@if (session('message'))
+    <div class="alert alert-success text-center">
+      <font color="black" size="3px">{{session('message')}}</font>
+    </div>
+    @endif
 	<!-- SECTION HEADLINE -->
 	<div class="section-headline-wrap">
 		<div class="section-headline">
@@ -490,39 +494,41 @@
 						<a class="flex-sm-fill text-sm-center nav-link" href="{{route('bbatal')}}">Batal</a>
 
 					</nav>
-					@foreach($pesanan as $data)
+
+					@foreach($dikirim as $data)
 					<div class="cart belumbayar">
+					@csrf
+                		<!-- CART -->
+				
 						<div class="p-3">
 							<p class="float-right">{{$data->created_at}}</p>
-							<p>Status Pesanan : {{$data->status}}</p>
+							<p>Status Pesanan : {{$data->status}}  </p>
 							<hr/>
 							<div class="container">
 								<div class="row">
 									<div class="col-sm">
 										<figure class="product-preview-image">
-										<img src="{{ asset('uploads/file/'.$data->pesanan->foto) }}" style="height:110%" alt="product-image">
+										<img src="{{ asset('uploads/file/'.$data->foto2) }}" style="height:110%" alt="product-image">
 										</figure>
 									</div>
 									<div class="col-sm">
-
-										<h4>Total Pembayaran  :{{$data->total_keuntungan}}</h4>
-										<p>Alamat : {{$data->alamat_antar}}</p>
+										<p>Jumlah Pesanan  : {{$data->jumlah}}</P> 
+										<h4>Total Pembayaran  : Rp{{$data->total_bayar}}</h4>
+										<p>Alamat : {{$data->alamat_antar}}
+										<p>Ongkos kirim : {{$data->ongkir}}
 									</div>
 								</div>
-                                <!-- <a href="">
-									<button type="button" class="btn btn-success float-right">Konfirmasi Pengiriman</button>
-								</a> -->
-
+								<form class="search-form" method="get" action="{{route('kirim-barang',$data->id_pesanan)}}">
+										<button type="submit" name="konfirmasi" value="0" class="btn btn-success float-right">Konfirmasi Barang Diterima</button>
+									</form>
 							</div>
-							<p>Kode Pemesanan {{$data ->id_pesanan}}</p>
+							<p>Kode Pemesanan : : 	{{$data ->id_pesanan}}</p>
+							
 						</div>
+						
 					</div>
 					@endforeach
 					<br/>
-
-
-
-
 				</div>
 			<!-- CONTENT -->
 		</div>

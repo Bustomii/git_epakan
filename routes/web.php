@@ -77,6 +77,7 @@ Route::get('produk-dijual','PenggunaController@ambilFotoprodukdijual')->name('di
 Route::get('tambah-produk','PenggunaController@ambilFototambahproduk')->name('tambah');
 Route::get('ubah-barang/{id}','PenggunaController@ambilFotoubahbarang')->name('ubah');
 Route::get('fromubah-barang','PenggunaController@ambilFotofromubahbarang')->name('fromubah');
+Route::get('kirim-barang/{kode_pesanan?}','PenggunaController@kirimBarang')->name('kirim-barang');
 //adminjual
 
 //ongkir
